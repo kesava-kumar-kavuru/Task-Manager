@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create New Task</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="task-form-container">
+    <div class="task-form-card">
+      <h2>Create New Task</h2>
+      <form id="taskForm">
+        <div class="input-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" required placeholder="Task title" />
+        </div>
+
+        <div class="input-group">
+          <label for="description">Description</label>
+          <textarea id="description" rows="4" placeholder="Optional task description"></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="priority">Priority</label>
+          <select id="priority" required>
+            <option value="">-- Select Priority --</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="dueDate">Due Date</label>
+          <input type="date" id="dueDate" required />
+        </div>
+
+        <div class="input-group">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <button type="submit" class="login-btn">Create Task</button>
+        <p class="switch-auth"><a href="dashboard.html">← Back to Dashboard</a></p>
+      </form>
+    </div>
+  </div>
+<script>
+  document.getElementById("taskForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const title = document.getElementById("title").value;
+    const description = document.getElementById("description").value;
+    const priority = document.getElementById("priority").value;
+    const dueDate = document.getElementById("dueDate").value;
+    const status = document.getElementById("status").value;
+
+    // Get the currently logged in user
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!user || !user._id) {
+      alert("User not logged in.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          priority,
+          dueDate,
+          status,
+          userId: user._id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Task saved successfully!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Failed to save task: " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error connecting to server.");
+    }
+  });
+</script>
+
+</body>
+</html>
+

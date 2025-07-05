@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Manager - Dashboard</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <h2>Welcome, <span id="username">User</span> 👋</h2>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </header>
+
+    <div class="task-actions">
+      <a href="create-task.html" class="create-task-btn">+ New Task</a>
+
+      <div class="filters">
+        <button onclick="filterTasks('all')">All</button>
+        <button onclick="filterTasks('Pending')">Pending</button>
+        <button onclick="filterTasks('Completed')">Completed</button>
+      </div>
+    </div>
+
+    <div class="task-list" id="taskList">
+      <!-- Tasks will be dynamically added here -->
+    </div>
+  </div>
+<script>
+  let allTasks = []; // Store tasks after fetch
+
+  window.onload = () => {
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!user || !user._id) {
+      alert("Please log in first.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    document.getElementById("username").textContent = user.name || "User";
+
+    fetchTasks(user._id);
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      alert("Logged out successfully.");
+      window.location.href = "login.html";
+    });
+  };
+
+  async function fetchTasks(userId) {
+    try {
+      const res = await fetch(`http://localhost:5000/api/tasks?userId=${userId}`);
+      allTasks = await res.json(); // Save all tasks in memory
+      filterTasks('all'); // Show all tasks by default
+    } catch (err) {
+      console.error("Error fetching tasks", err);
+      alert("Failed to load tasks.");
+    }
+  }
+
+  function filterTasks(status) {
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = ""; // Clear previous
+
+    let filtered = allTasks;
+
+    if (status !== 'all') {
+      filtered = allTasks.filter(task => task.status === status);
+    }
+
+    if (filtered.length === 0) {
+      taskList.innerHTML = "<p>No tasks found.</p>";
+      return;
+    }
+
+    filtered.forEach((task) => {
+      const taskCard = document.createElement("div");
+      taskCard.className = "task-card";
+      taskCard.innerHTML = `
+        <h3>${task.title}</h3>
+        <p>${task.description || "No description"}</p>
+        <p><strong>Priority:</strong> ${task.priority}</p>
+        <p><strong>Due:</strong> ${new Date(task.dueDate).toLocaleDateString()}</p>
+        <p><strong>Status:</strong> ${task.status}</p>
+        <button class="delete-btn" onclick="deleteTask('${task._id}')">Delete</button>
+      `;
+      taskList.appendChild(taskCard);
+    });
+  }
+
+  async function deleteTask(taskId) {
+    if (!confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        alert("Task deleted");
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));
+        fetchTasks(user._id); // Re-fetch tasks and re-filter
+      } else {
+        const data = await res.json();
+        alert("Failed to delete task: " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Server error deleting task");
+    }
+  }
+</script>
+
+
+
+</body>
+</html>

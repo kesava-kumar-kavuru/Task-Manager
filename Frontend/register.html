@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager - Register</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <h2>Create Account</h2>
+      <form id="registerForm" onsubmit="return handleRegister(event)">
+        <div class="input-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" required placeholder="Enter your full name" />
+        </div>
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required placeholder="Enter your email" />
+        </div>
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required placeholder="Enter your password" />
+        </div>
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" required placeholder="Re-enter your password" />
+        </div>
+        <div class="input-group checkbox-group">
+          <input type="checkbox" id="terms" required />
+          <label for="terms" class="checkbox-label">I agree to the terms & conditions</label>
+        </div>
+        <button type="submit" class="login-btn">Register</button>
+        <p class="switch-auth">Already have an account? <a href="login.html">Login</a></p>
+      </form>
+    </div>
+  </div>
+  <script>
+  async function handleRegister(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Registration successful!");
+        window.location.href = "login.html";
+      } else {
+        alert(data.message || "Registration failed");
+      }
+    } catch (err) {
+      alert("Server error");
+    }
+  }
+</script>
+
+
+</body>
+</html>
