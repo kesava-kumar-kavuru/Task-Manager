@@ -26,6 +26,9 @@
     </div>
   </div>
   <script>
+  const API_BASE_URL = "https://task-manager-yvs0.onrender.com/api"; 
+  // ✅ Only change this when needed
+  //const API_BASE_URL ="http://localhost:5000/api";
   async function togglePassword() {
     const passwordInput = document.getElementById("password");
     passwordInput.type = passwordInput.type === "password" ? "text" : "password";
@@ -38,7 +41,7 @@
     const password = document.getElementById("password").value;
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

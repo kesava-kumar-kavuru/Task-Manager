@@ -32,11 +32,13 @@
           <label for="terms" class="checkbox-label">I agree to the terms & conditions</label>
         </div>
         <button type="submit" class="login-btn">Register</button>
-        <p class="switch-auth">Already have an account? <a href="login.html">Login</a></p>
+        <p class="switch-auth">Already have an account? <a href="index.html">Login</a></p>
       </form>
     </div>
   </div>
   <script>
+    const API_BASE_URL = "https://task-manager-yvs0.onrender.com/api";
+    //const API_BASE_URL="http://localhost:5000/api";
   async function handleRegister(e) {
     e.preventDefault();
 
@@ -51,7 +53,7 @@
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/register", {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
@@ -61,7 +63,7 @@
 
       if (res.ok) {
         alert("Registration successful!");
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       } else {
         alert(data.message || "Registration failed");
       }

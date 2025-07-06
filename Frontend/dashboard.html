@@ -28,6 +28,8 @@
     </div>
   </div>
 <script>
+      const API_BASE_URL = "https://task-manager-yvs0.onrender.com/api";
+      //const API_BASE_URL="http://localhost:5000/api";
   let allTasks = []; // Store tasks after fetch
 
   window.onload = () => {
@@ -35,7 +37,7 @@
 
     if (!user || !user._id) {
       alert("Please log in first.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
       return;
     }
 
@@ -46,13 +48,13 @@
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("loggedInUser");
       alert("Logged out successfully.");
-      window.location.href = "login.html";
+      window.location.href = "index.html";
     });
   };
 
   async function fetchTasks(userId) {
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks?userId=${userId}`);
+      const res = await fetch(`${API_BASE_URL}/tasks?userId=${userId}`);
       allTasks = await res.json(); // Save all tasks in memory
       filterTasks('all'); // Show all tasks by default
     } catch (err) {
@@ -95,7 +97,7 @@
     if (!confirm("Are you sure you want to delete this task?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}`, {
+      const res = await fetch(`${API_BASE_URL}/tasks/${taskId}`, {
         method: "DELETE",
       });
 
