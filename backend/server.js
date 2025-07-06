@@ -7,7 +7,14 @@ dotenv.config();
 const app = express();
 const PORT = 5000;
 //process.env.PORT
-app.use(cors());
+//app.use(cors());
+const corsOptions = {
+  origin: "https://task-manager-one-sandy.vercel.app", // ✅ replace with your actual Vercel frontend URL
+  credentials: true, // if you're sending cookies or authentication headers
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Routes
